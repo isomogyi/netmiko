@@ -54,28 +54,26 @@ nothing to commit, working tree clean
 
 ```
 
-#### Install Poetry 
+#### Install uv
 
-Poetry is used to manage the dependencies needed for the Netmiko development environment. 
+uv is used to manage the dependencies needed for the Netmiko development environment.
 
-Make sure that you add Poetry to your $PATH.
-
-[Poetry Install](https://python-poetry.org/docs/#installing-with-the-official-installer)
+[uv Install](https://docs.astral.sh/uv/getting-started/installation/)
 
 ```
-# Verify Poetry is installed and in your $PATH
+# Verify uv is installed and in your $PATH
 
-$ poetry --version
-Poetry (version 1.x.y)
+$ uv --version
+uv 0.x.y
 ```
 
-#### Use Poetry to install Netmiko dependencies
+#### Use uv to install Netmiko dependencies
 
 This will also create a virtual environment located in .venv.
 
 ```
 # From the base of the Netmiko repository (the directory should contain the pyproject.toml file).
-$ poetry install
+$ uv sync
 <"Installing x"...>
 ```
 
@@ -89,35 +87,34 @@ source .venv/bin/activate
 
 ```
 # Should report all files as 'unchanged'
-$ black --check .
-All done! ✨ 🍰 ✨
-264 files would be left unchanged.
+$ uv run --frozen ruff format --check .
+323 files already formatted
 
 # Linter should report nothing (at this point)
-$ pylama .
+$ uv run --frozen ruff check .
+All checks passed!
 
 # Type hints should be happy 😃
-$ mypy netmiko/
+$ uv run --frozen mypy netmiko/
 Success: no issues found in 194 source files
 ```
 
 Unit tests should pass (once again we are testing on unchanged 'develop' branch at this point so everything should pass)
 
 ```
-$ py.test tests/unit/
+$ uv run --frozen pytest tests/unit
 ============================= test session starts ==============================
-platform linux -- Python 3.9.12, pytest-7.1.2, pluggy-1.3.0
-rootdir: /home/ktbyers/netmiko_tmp/netmiko, configfile: setup.cfg
-plugins: pylama-8.3.8
-collected 58 items                                                             
-
+platform linux -- Python 3.13.12, pytest-8.3.3, pluggy-1.6.0
+rootdir: /home/ktbyers/netmiko
+configfile: pyproject.toml
+collected 89 items
 tests/unit/test_base_connection.py ........................              [ 41%]
 tests/unit/test_connection.py ....                                       [ 48%]
 tests/unit/test_entry_points.py .                                        [ 50%]
 tests/unit/test_ssh_autodetect.py .                                      [ 51%]
 tests/unit/test_utilities.py ............................                [100%]
 
-============================== 58 passed in 6.41s ==============================
+============================== 89 passed in 6.41s ==============================
 ```
 
 #### Create a branch for your work:
@@ -135,17 +132,17 @@ At the end of your changes the linters and unit tests MUST all pass.
 
 ```
 cd {{ repo_base }}
-# Use black to autoformat the code
-black .
+# Use 'ruff format' to autoformat the code
+uv run --frozen ruff format .
 
 # Fix any linting errors
-pylama .
+uv run --frozen ruff check .
 
 # Type hints (if you struggle with this, submit PR and ask for assistance)
-mypy netmiko/
+uv run --frozen mypy netmiko/
 
 # Unit tests
-$ py.test tests/unit/
+$ uv run --frozen pytest tests/unit/
 ```
 
 #### Submit your PR to the Netmiko repository. 
@@ -154,6 +151,6 @@ Place a clear statement regarding the purpose of the PR (bug it is fixing, featu
 
 For any more meaningful feature, you should open a GitHub issue or discussion first and make sure that we agree on implementing this feature.
 
-The PR will will be sourced from your forked repository + the forked repository branch in use, with the destination of Netmiko's develop branch.
+The PR will be sourced from your forked repository + the forked repository branch in use, with the destination of Netmiko's develop branch.
 
 ![An example PR from a forked repository](./images/03-contrib.png)

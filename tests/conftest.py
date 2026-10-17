@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """py.test fixtures to be used in netmiko test suite."""
+
 from os import path
 import os
 
@@ -20,6 +21,20 @@ def pytest_addoption(parser):
         dest="test_device",
         type=str,
         help="Specify the platform type to test on",
+    )
+    parser.addoption(
+        "--snmp_community",
+        action="store",
+        dest="snmp_community",
+        type=str,
+        help="Specify the SNMPv2c community to test",
+    )
+    parser.addoption(
+        "--snmp_user",
+        action="store",
+        dest="snmp_user",
+        type=str,
+        help="Specify the SNMPv3 user to test",
     )
 
 
@@ -320,9 +335,7 @@ def delete_file_nokia_sros(ssh_conn, dest_file_system, dest_file):
     if "@" in ssh_conn.base_prompt:
         cmd_prefix = "//"
     ssh_conn.send_command(cmd_prefix + "environment no more")
-    output = ssh_conn.send_command_timing(
-        cmd_prefix + cmd, strip_command=False, strip_prompt=False
-    )
+    output = ssh_conn.send_command_timing(cmd_prefix + cmd, strip_command=False, strip_prompt=False)
     return output
 
 
@@ -628,6 +641,11 @@ def get_platform_args():
         "ubiquiti_edgerouter": {
             "file_system": "/home/admin",
             "enable_scp": True,
+            "delete_file": delete_file_generic,
+        },
+        "zpe_nodegrid": {
+            "file_system": "/var/tmp",
+            "enable_scp": False,
             "delete_file": delete_file_generic,
         },
     }

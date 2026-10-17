@@ -20,19 +20,19 @@ while true; do
     esac
 done
 
-pylama .
+ruff check .
 if [ $? -eq 0 ]; then
     echo
-    echo "pylama ... [OK]"
+    echo "ruff check ... [OK]"
     echo
 else
     echo
-    echo "pylama ... [FAIL]"
+    echo "ruff check ... [FAIL]"
     exit 1
 fi
 
 echo
-poetry build > /dev/null
+uv build > /dev/null
 if [ $? -eq 0 ]; then
     echo "creating distribution ... [OK]"
     ls -ltr $DIR_PACKAGE
